@@ -255,24 +255,60 @@ void GoRight(){
 void ColourSensorCalibration(){
   // Read Red value
   redPW = getRedPW();
+  differenceGreen = redPW - green[0];
+  differenceYellow = redPW - yellow[0];
+  differencePurple = redPW - purple[0];
   // Map to value from 0-255
   redValue = map(redPW, redMin,redMax,255,0);
   // Delay to stabilize sensor
-  delay(200);
+  if (abs(differenceGreen)<10) {
+    greenFlag[0] = true;
+  }
+  if (abs(differenceYellow)<10) {
+    yellowFlag[0] = true;
+  }
+  if (abs(differencePurple)<10) {
+    purpleFlag[0] = true;
+  }
+  delay(100)
   
   // Read Green value
   greenPW = getGreenPW();
+  differenceGreen = greenPW - green[1];
+  differenceYellow = greenPW - yellow[1];
+  differencePurple = greenPW - purple[1];
   // Map to value from 0-255
   greenValue = map(greenPW, greenMin,greenMax,255,0);
   // Delay to stabilize sensor
-  delay(200);
+  if (abs(differenceGreen)<10) {
+    greenFlag[1] = true;
+  }
+  if (abs(differenceYellow)<10) {
+    yellowFlag[1] = true;
+  }
+  if (abs(differencePurple)<10) {
+    purpleFlag[1] = true;
+  }
+  delay(100)
   
   // Read Blue value
   bluePW = getBluePW();
+  differenceGreen = bluePW - green[2];
+  differenceYellow = bluePW - yellow[2];
+  differencePurple = bluePW - purple[2];
   // Map to value from 0-255
   blueValue = map(bluePW, blueMin,blueMax,255,0);
   // Delay to stabilize sensor
-  delay(200);
+  if (abs(differenceGreen)<10) {
+    greenFlag[2] = true;
+  }
+  if (abs(differenceYellow)<10) {
+    yellowFlag[2] = true;
+  }
+  if (abs(differencePurple)<10) {
+    purpleFlag[2] = true;
+  }
+  delay(100)
   
   // Print output to Serial Monitor
   Serial.print("Red = ");
@@ -292,7 +328,7 @@ void ColourSensorCalibration(){
   // }
 
 }
- 
+
  
 // Function to read Red Pulse Widths
 int getRedPW() {
