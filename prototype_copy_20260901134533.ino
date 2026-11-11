@@ -9,6 +9,9 @@ const uint8_t SensorCount = 4;
 
 uint16_t sensorValues[SensorCount];
 
+//Line sensor readings
+//white:<=1999
+//black:>=2000
 
 //ultrasonic pins
 const int trig = A0;
@@ -23,10 +26,10 @@ const int echo = A1;
 
 #define sensorOut 9
 //Motor A
-int IN1 = 4; int IN2 = 2;
+int IN1 = 3; int IN2 = 4;
 
 //Motor B
-int IN3 = 3; int IN4 = 1;
+int IN3 = A0; int IN4 = A1;
 //motor pin assignment
               //       motor A            motor B
               // |------------------||------------------|
@@ -54,7 +57,7 @@ int redValue;
 int greenValue;
 int blueValue;
 
-//white and black readings after calibration
+//colour sensor white and black readings after calibration
 //White [243, 242, 245]
 //Black [18, 11, 9]
 
@@ -210,7 +213,7 @@ void loop()
 {
   LineSensor();
   ColourSensorCalibration();
-
+GoStraight();
 }
 
 void LineSensor() {
@@ -239,9 +242,15 @@ void LineSensor() {
 
 
   delay(250);
+  // for (uint8_t i = 0; i < SensorCount; i++) {
+  //   if (sensorValues[i] > 2000) {
+  //     GoStraight();
+  //   }
+  // }
 }
 void GoStraight(){
-
+  digitalWrite(IN1, HIGH);
+  digitalWrite(IN2, LOW);
 }
 
 void GoLeft(){
@@ -255,60 +264,24 @@ void GoRight(){
 void ColourSensorCalibration(){
   // Read Red value
   redPW = getRedPW();
-  differenceGreen = redPW - green[0];
-  differenceYellow = redPW - yellow[0];
-  differencePurple = redPW - purple[0];
   // Map to value from 0-255
   redValue = map(redPW, redMin,redMax,255,0);
   // Delay to stabilize sensor
-  if (abs(differenceGreen)<10) {
-    greenFlag[0] = true;
-  }
-  if (abs(differenceYellow)<10) {
-    yellowFlag[0] = true;
-  }
-  if (abs(differencePurple)<10) {
-    purpleFlag[0] = true;
-  }
-  delay(100)
+  delay(200);
   
   // Read Green value
   greenPW = getGreenPW();
-  differenceGreen = greenPW - green[1];
-  differenceYellow = greenPW - yellow[1];
-  differencePurple = greenPW - purple[1];
   // Map to value from 0-255
   greenValue = map(greenPW, greenMin,greenMax,255,0);
   // Delay to stabilize sensor
-  if (abs(differenceGreen)<10) {
-    greenFlag[1] = true;
-  }
-  if (abs(differenceYellow)<10) {
-    yellowFlag[1] = true;
-  }
-  if (abs(differencePurple)<10) {
-    purpleFlag[1] = true;
-  }
-  delay(100)
+  delay(200);
   
   // Read Blue value
   bluePW = getBluePW();
-  differenceGreen = bluePW - green[2];
-  differenceYellow = bluePW - yellow[2];
-  differencePurple = bluePW - purple[2];
   // Map to value from 0-255
   blueValue = map(bluePW, blueMin,blueMax,255,0);
   // Delay to stabilize sensor
-  if (abs(differenceGreen)<10) {
-    greenFlag[2] = true;
-  }
-  if (abs(differenceYellow)<10) {
-    yellowFlag[2] = true;
-  }
-  if (abs(differencePurple)<10) {
-    purpleFlag[2] = true;
-  }
-  delay(100)
+  delay(200);
   
   // Print output to Serial Monitor
   Serial.print("Red = ");
@@ -328,7 +301,7 @@ void ColourSensorCalibration(){
   // }
 
 }
-
+ 
  
 // Function to read Red Pulse Widths
 int getRedPW() {
