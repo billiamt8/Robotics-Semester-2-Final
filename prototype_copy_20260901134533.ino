@@ -71,7 +71,9 @@ int yellow[] = {240, 223, 185};
 bool yellowFlag[] = {false, false, false};
 
 
-int difference = 0;
+int differenceGreen = 0;
+int differenceYellow = 0;
+int differencePurple = 0;
  
 //SD card reader
 File myFile;
@@ -124,7 +126,13 @@ void LineSensorSetup() {
   qtr.setTypeRC();
 
   qtr.setSensorPins((const uint8_t[]){A2, A3, A4, A5}, SensorCount);
+  //calibration
+  for (int i = 0; i < 400; i++)
+  {   
 
+      qtr.calibrate();
+
+  }   
 }
 
 void SDCardSetup(){
@@ -211,54 +219,32 @@ void readFromSDCard(){
 void loop()
 
 {
-  LineSensor();
+  FollowLine();
   ColourSensorCalibration();
-GoStraight();
 }
 
-void LineSensor() {
-    // read raw sensor values
 
-  qtr.read(sensorValues);
+void FollowLine(){
+  uint16_t position = qtr.readLineBlack(sensorValues);  
+    for (uint8_t i = 0; i < SensorCount; i++)
+    {
+      Serial.print(sensorValues[i]);
+      Serial.print('\t');
+    }
+    Serial.println(position); 
 
-
-
-  // print the sensor values as numbers from 0 to 1023, where 0 means maximum
-
-  // reflectance and 1023 means minimum reflectance
-
-  for (uint8_t i = 0; i < SensorCount; i++)
-
-  {
-
-    Serial.print(sensorValues[i]);
-
-    Serial.print('\t');
-
-  }
-
-  Serial.println();
+     if(position>2000)  
+    {
+        myMotors.forward();
+   
+    }
 
 
+    if(position<2000)
+    {  
+        myMotors.backward();
 
-  delay(250);
-  // for (uint8_t i = 0; i < SensorCount; i++) {
-  //   if (sensorValues[i] > 2000) {
-  //     GoStraight();
-  //   }
-  // }
-}
-void GoStraight(){
-  digitalWrite(IN1, HIGH);
-  digitalWrite(IN2, LOW);
-}
-
-void GoLeft(){
-
-}
-
-void GoRight(){
-  
+    }
 }
 
 void ColourSensorCalibration(){
